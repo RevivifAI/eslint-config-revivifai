@@ -8,36 +8,23 @@
 
 // @ts-check
 
+import type { Linter } from "eslint";
+
 import eslint from "@eslint/js";
 import eslintConfigPrettier from "eslint-config-prettier";
 import jsdoc from "eslint-plugin-jsdoc";
 import perfectionist from "eslint-plugin-perfectionist";
-import tseslint from "typescript-eslint";
 import unicorn from "eslint-plugin-unicorn";
-
-import type { Linter } from "eslint";
+import tseslint from "typescript-eslint";
 
 /**
  * Options for configuring the RevivifAI ESLint config.
  */
 export interface RevivifaiEslintOptions {
   /**
-   * Root directory for the project. Used for tsconfig resolution.
-   * @default process.cwd()
+   * Additional ignore patterns.
    */
-  tsconfigRootDir?: string;
-
-  /**
-   * Path to tsconfig.json relative to tsconfigRootDir.
-   * @default "./tsconfig.json"
-   */
-  tsconfig?: string;
-
-  /**
-   * Files to include for type-checked linting.
-   * @default ["**\/*.ts", "**\/*.tsx"]
-   */
-  typeCheckingFiles?: string[];
+  ignores?: string[];
 
   /**
    * Whether to enable JSDoc enforcement rules.
@@ -46,21 +33,28 @@ export interface RevivifaiEslintOptions {
   jsdoc?: boolean;
 
   /**
-   * Whether to enable Unicorn rules.
-   * @default true
-   */
-  unicorn?: boolean;
-
-  /**
    * Whether to enable Perfectionist import/member sorting.
    * @default true
    */
   perfectionist?: boolean;
 
   /**
-   * Additional ignore patterns.
+   * Root directory for the project. Used for tsconfig resolution.
+   * @default process.cwd()
    */
-  ignores?: string[];
+  tsconfigRootDir?: string;
+
+  /**
+   * Files to include for type-checked linting.
+   * @default ["**\/*.ts", "**\/*.tsx"]
+   */
+  typeCheckingFiles?: string[];
+
+  /**
+   * Whether to enable Unicorn rules.
+   * @default true
+   */
+  unicorn?: boolean;
 }
 
 /**
@@ -80,13 +74,12 @@ export interface RevivifaiEslintOptions {
  */
 export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Config[] {
   const {
-    tsconfigRootDir = process.cwd(),
-    tsconfig = "./tsconfig.json",
-    typeCheckingFiles = ["**/*.ts", "**/*.tsx"],
-    jsdoc: enableJsdoc = true,
-    unicorn: enableUnicorn = true,
-    perfectionist: enablePerfectionist = true,
     ignores = [],
+    jsdoc: enableJsdoc = true,
+    perfectionist: enablePerfectionist = true,
+    tsconfigRootDir = process.cwd(),
+    typeCheckingFiles = ["**/*.ts", "**/*.tsx"],
+    unicorn: enableUnicorn = true,
   } = options;
 
   const configs: Linter.Config[] = [
@@ -118,7 +111,6 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
             allowDefaultProject: ["vitest.config.ts", "vite.config.ts", "eslint.config.js"],
           },
           tsconfigRootDir,
-          project: tsconfig,
         },
       },
     },
@@ -126,7 +118,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
 
   // ── Import / member sorting (perfectionist) ─────────────────────────
   if (enablePerfectionist) {
-    configs.push(perfectionist.configs["recommended-natural"] as Linter.Config);
+    configs.push(perfectionist.configs["recommended-natural"]);
   }
 
   // ── JSDoc linting ───────────────────────────────────────────────────
@@ -159,9 +151,9 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
           {
             publicOnly: true,
             require: {
+              ClassDeclaration: true,
               FunctionDeclaration: true,
               MethodDefinition: true,
-              ClassDeclaration: true,
             },
           },
         ],
@@ -192,17 +184,17 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       files: typeCheckingFiles,
       plugins: { unicorn },
       rules: {
+        "unicorn/no-object-as-default-exception": "off",
+        // Prefer String.startsWith/endsWith over regex or indexOf
+        "unicorn/prefer-string-starts-ends-with": "error",
         // Prefer switch over multiple else-if with simple equality comparisons
         "unicorn/prefer-switch": [
           "error",
           {
-            minimumCases: 3,
             emptyDefaultCase: "no-default-comment",
+            minimumCases: 3,
           },
         ],
-        // Prefer String.startsWith/endsWith over regex or indexOf
-        "unicorn/prefer-string-starts-ends-with": "error",
-        "unicorn/no-object-as-default-exception": "off",
       },
     });
   }
@@ -210,9 +202,14 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
   // ── Project-specific overrides ──────────────────────────────────────
   configs.push({
     rules: {
+      "@typescript-eslint/consistent-indexed-object-style": "error",
+      "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
       // ── Deprecated API usage ────────────────────────────────────────
       "@typescript-eslint/no-deprecated": "error",
-
+      "@typescript-eslint/no-floating-promises": "error",
+      "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: true }],
+      "@typescript-eslint/no-redundant-type-constituents": "error",
+      "@typescript-eslint/no-unnecessary-condition": "error",
       // ── TypeScript strictness tuning ────────────────────────────────
       "@typescript-eslint/no-unused-vars": [
         "error",
@@ -222,46 +219,33 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
           varsIgnorePattern: "^_",
         },
       ],
+      "@typescript-eslint/prefer-literal-enum-member": "error",
+      "@typescript-eslint/prefer-nullish-coalescing": "error",
+      "@typescript-eslint/prefer-optional-chain": "error",
+      // ── Correctness ───────────────────────────────────────────────────
+      "@typescript-eslint/require-array-sort-compare": "error",
       "@typescript-eslint/restrict-template-expressions": [
         "error",
         {
-          allowNumber: true,
           allowBoolean: true,
+          allowNumber: true,
         },
       ],
-      "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
-
-      // ── General best practices ──────────────────────────────────────
-      "no-console": "warn",
+      "@typescript-eslint/return-await": ["error", "in-try-catch"],
+      // ── Type safety ──────────────────────────────────────────────────
+      "@typescript-eslint/switch-exhaustiveness-check": "error",
+      "@typescript-eslint/unbound-method": ["error", { ignoreStatic: true }],
       curly: ["error", "all"],
       eqeqeq: ["error", "always"],
+      // ── General best practices ──────────────────────────────────────
+      "no-console": "warn",
       "no-eval": "error",
       "no-implied-eval": "off", // covered by @typescript-eslint
       "no-return-await": "off", // covered by @typescript-eslint
-      "prefer-const": "error",
+      "no-throw-literal": "off", // covered by @typescript-eslint
+      "no-useless-escape": "error",
       "no-var": "error",
       "object-shorthand": "error",
-      "prefer-template": "error",
-      "prefer-arrow-callback": "error",
-      "no-throw-literal": "off", // covered by @typescript-eslint
-
-      // ── Type safety ──────────────────────────────────────────────────
-      "@typescript-eslint/switch-exhaustiveness-check": "error",
-      "@typescript-eslint/no-floating-promises": "error",
-      "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: true }],
-      "@typescript-eslint/return-await": ["error", "in-try-catch"],
-
-      // ── Correctness ───────────────────────────────────────────────────
-      "@typescript-eslint/require-array-sort-compare": "error",
-      "@typescript-eslint/prefer-nullish-coalescing": "error",
-      "@typescript-eslint/prefer-optional-chain": "error",
-      "@typescript-eslint/no-unnecessary-condition": "error",
-      "@typescript-eslint/prefer-literal-enum-member": "error",
-      "@typescript-eslint/unbound-method": ["error", { ignoreStatic: true }],
-      "@typescript-eslint/consistent-indexed-object-style": "error",
-      "@typescript-eslint/no-redundant-type-constituents": "error",
-      "no-useless-escape": "error",
-
       // ── Whitespace around variable declarations ───────────────────────────
       // Require blank line after variable declarations, except:
       // - When followed by another variable declaration (keep grouped)
@@ -271,16 +255,19 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "padding-line-between-statements": [
         "error",
         // Require blank line after variable declarations before non-variable statements
-        { blankLine: "always", prev: ["const", "let", "var"], next: "*" },
+        { blankLine: "always", next: "*", prev: ["const", "let", "var"] },
         // Allow no blank line between consecutive variable declarations
-        { blankLine: "any", prev: ["const", "let", "var"], next: ["const", "let", "var"] },
+        { blankLine: "any", next: ["const", "let", "var"], prev: ["const", "let", "var"] },
         // No blank line at start of block (after curly brace)
-        { blankLine: "any", prev: ["block", "case", "default"], next: ["const", "let", "var"] },
+        { blankLine: "any", next: ["const", "let", "var"], prev: ["block", "case", "default"] },
         // Require blank line before variable declarations after non-variable statements
-        { blankLine: "always", prev: "*", next: ["const", "let", "var"] },
+        { blankLine: "always", next: ["const", "let", "var"], prev: "*" },
         // Override: allow no blank line between consecutive variable declarations (both directions)
-        { blankLine: "any", prev: ["const", "let", "var"], next: ["const", "let", "var"] },
+        { blankLine: "any", next: ["const", "let", "var"], prev: ["const", "let", "var"] },
       ],
+      "prefer-arrow-callback": "error",
+      "prefer-const": "error",
+      "prefer-template": "error",
     },
   });
 

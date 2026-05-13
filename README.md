@@ -51,12 +51,6 @@ interface RevivifaiEslintOptions {
   tsconfigRootDir?: string;
 
   /**
-   * Path to tsconfig.json relative to tsconfigRootDir.
-   * @default "./tsconfig.json"
-   */
-  tsconfig?: string;
-
-  /**
    * Files to include for type-checked linting.
    * @default ["**\/*.ts", "**\/*.tsx"]
    */
@@ -130,6 +124,7 @@ export default createConfig({
 ### JSDoc (40+ Rules)
 
 Comprehensive JSDoc enforcement including:
+
 - `jsdoc/require-jsdoc` — Public functions/classes require JSDoc
 - `jsdoc/require-description` — JSDoc must have descriptions
 - `jsdoc/require-param` — Document all parameters
@@ -181,16 +176,16 @@ This config includes `eslint-config-prettier` to disable all ESLint rules that m
 
 ## Comparison with Airbnb Configs
 
-| Feature | @revivifai/eslint-config | eslint-config-airbnb-extended |
-|---------|--------------------------|------------------------------|
-| Config Format | ✅ Flat config (ESLint 9+) | ✅ Flat config (ESLint 9+) |
-| TypeScript | ✅ strictTypeChecked | ✅ TypeScript support |
-| JSDoc | ✅ 40+ rules | ❌ Not included |
-| Import Sorting | ✅ Perfectionist | ✅ import-x |
-| Unicorn | ✅ Built-in | ❌ Not included |
-| React/JSX | ❌ Not configured | ✅ React, hooks, a11y |
-| Node.js | ❌ Not configured | ✅ eslint-plugin-n |
-| Prettier | ✅ Integrated | ❌ Uses stylistic plugin |
+| Feature        | @revivifai/eslint-config   | eslint-config-airbnb-extended |
+| -------------- | -------------------------- | ----------------------------- |
+| Config Format  | ✅ Flat config (ESLint 9+) | ✅ Flat config (ESLint 9+)    |
+| TypeScript     | ✅ strictTypeChecked       | ✅ TypeScript support         |
+| JSDoc          | ✅ 40+ rules               | ❌ Not included               |
+| Import Sorting | ✅ Perfectionist           | ✅ import-x                   |
+| Unicorn        | ✅ Built-in                | ❌ Not included               |
+| React/JSX      | ❌ Not configured          | ✅ React, hooks, a11y         |
+| Node.js        | ❌ Not configured          | ✅ eslint-plugin-n            |
+| Prettier       | ✅ Integrated              | ❌ Uses stylistic plugin      |
 
 ## License
 
