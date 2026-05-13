@@ -9,7 +9,7 @@ A comprehensive, modern ESLint flat config for TypeScript projects with strict t
 - **JSDoc Enforcement** — Comprehensive JSDoc linting with 40+ rules
 - **Import Sorting** — Automatic import/member sorting via `eslint-plugin-perfectionist`
 - **Unicorn Rules** — Additional best-practice rules from `eslint-plugin-unicorn`
-- **Prettier Compatible** — Disables conflicting formatting rules
+- **Stylistic Formatting** — Comprehensive code formatting via `@stylistic/eslint-plugin` and `@seahax/eslint-plugin-wrap`
 
 ## Installation
 
@@ -22,7 +22,7 @@ pnpm add -D @revivifai/eslint-config
 This package requires the following peer dependencies:
 
 ```bash
-pnpm add -D eslint@^10 prettier typescript typescript-eslint
+pnpm add -D eslint@^10 typescript typescript-eslint
 ```
 
 **ESLint Compatibility:** Supports ESLint 9.x and 10.x (ESLint 10 is the latest stable release).
@@ -73,6 +73,12 @@ interface RevivifaiEslintOptions {
    * @default true
    */
   perfectionist?: boolean;
+
+  /**
+   * Whether to enable Stylistic formatting rules.
+   * @default true
+   */
+  stylistic?: boolean;
 
   /**
    * Additional ignore patterns.
@@ -160,19 +166,17 @@ The following rules are automatically relaxed in test files (`test/**/*.ts`, `te
 - `@typescript-eslint/unbound-method` — Off
 - `no-console` — Off
 
-## Prettier Setup
+## Stylistic Formatting
 
-This config includes `eslint-config-prettier` to disable all ESLint rules that might conflict with Prettier. Make sure you also have a Prettier config:
+This config includes `@stylistic/eslint-plugin` and `@seahax/eslint-plugin-wrap` to handle all code formatting concerns directly within ESLint. This replaces the need for Prettier.
 
-```json
-// .prettierrc.json
-{
-  "quoteStyle": "double",
-  "trailingComma": "all",
-  "tabWidth": 2,
-  "semi": true
-}
-```
+The default formatting style is:
+- **Indent**: 2 spaces
+- **Quotes**: Double
+- **Semi-colons**: Required
+- **Trailing Commas**: All (multiline)
+- **Line Length**: 100 characters (with auto-wrapping)
+- **Line Endings**: LF
 
 ## Comparison with Airbnb Configs
 
@@ -185,7 +189,7 @@ This config includes `eslint-config-prettier` to disable all ESLint rules that m
 | Unicorn        | ✅ Built-in                | ❌ Not included               |
 | React/JSX      | ❌ Not configured          | ✅ React, hooks, a11y         |
 | Node.js        | ❌ Not configured          | ✅ eslint-plugin-n            |
-| Prettier       | ✅ Integrated              | ❌ Uses stylistic plugin      |
+| Formatting     | ✅ ESLint Stylistic        | ✅ ESLint Stylistic           |
 
 ## License
 

@@ -11,7 +11,8 @@
 import type { Linter } from "eslint";
 
 import eslint from "@eslint/js";
-import eslintConfigPrettier from "eslint-config-prettier";
+import wrap from "@seahax/eslint-plugin-wrap";
+import stylistic from "@stylistic/eslint-plugin";
 import jsdoc from "eslint-plugin-jsdoc";
 import perfectionist from "eslint-plugin-perfectionist";
 import unicorn from "eslint-plugin-unicorn";
@@ -37,6 +38,12 @@ export interface RevivifaiEslintOptions {
    * @default true
    */
   perfectionist?: boolean;
+
+  /**
+   * Whether to enable Stylistic formatting rules.
+   * @default true
+   */
+  stylistic?: boolean;
 
   /**
    * Root directory for the project. Used for tsconfig resolution.
@@ -77,6 +84,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     ignores = [],
     jsdoc: enableJsdoc = true,
     perfectionist: enablePerfectionist = true,
+    stylistic: enableStylistic = true,
     tsconfigRootDir = process.cwd(),
     typeCheckingFiles = ["**/*.ts", "**/*.tsx"],
     unicorn: enableUnicorn = true,
@@ -203,7 +211,10 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
   configs.push({
     rules: {
       "@typescript-eslint/consistent-indexed-object-style": "error",
-      "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
+      "@typescript-eslint/no-confusing-void-expression": [
+        "error",
+        { ignoreArrowShorthand: true },
+      ],
       // ── Deprecated API usage ────────────────────────────────────────
       "@typescript-eslint/no-deprecated": "error",
       "@typescript-eslint/no-floating-promises": "error",
@@ -286,8 +297,62 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     },
   });
 
-  // ── Disable formatting rules (let Prettier handle it) ──────────────
-  configs.push(eslintConfigPrettier);
+  // ── Stylistic formatting ───────────────────────────────────────────
+  if (enableStylistic) {
+    const stylisticConfig = stylistic.configs.customize({
+      arrowParens: true,
+      blockSpacing: true,
+      braceStyle: "1tbs",
+      commaDangle: "always-multiline",
+      indent: 2,
+      jsx: false,
+      quotes: "double",
+      semi: true,
+    });
+
+    configs.push(
+      stylisticConfig,
+      {
+        rules: {
+          "@stylistic/comma-dangle": [
+            "error",
+            {
+              arrays: "always-multiline",
+              enums: "always-multiline",
+              exports: "always-multiline",
+              functions: "always-multiline",
+              generics: "always-multiline",
+              imports: "always-multiline",
+              objects: "always-multiline",
+              tuples: "always-multiline",
+            },
+          ],
+          "@stylistic/linebreak-style": ["error", "unix"],
+          "@stylistic/max-len": [
+            "error",
+            {
+              code: 100,
+              ignoreStrings: true,
+              ignoreTemplateLiterals: true,
+              ignoreUrls: true,
+            },
+          ],
+          "@stylistic/member-delimiter-style": [
+            "error",
+            {
+              multiline: { delimiter: "semi", requireLast: true },
+              singleline: { delimiter: "semi", requireLast: false },
+            },
+          ],
+          "@stylistic/no-tabs": "error",
+          "@stylistic/operator-linebreak": ["error", "before"],
+          "@stylistic/quote-props": ["error", "as-needed"],
+          "@stylistic/type-annotation-spacing": ["error", { after: true, before: false }],
+        },
+      },
+      wrap.config({ maxLen: 100 }),
+    );
+  }
 
   return configs;
 }

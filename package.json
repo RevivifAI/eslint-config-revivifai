@@ -1,6 +1,6 @@
 {
   "name": "@revivifai/eslint-config",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "RevivifAI's ESLint configuration for TypeScript projects",
   "type": "module",
   "main": "dist/index.js",
@@ -18,8 +18,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "lint": "eslint . && prettier --check .",
-    "lint:fix": "eslint . --fix && prettier --write .",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [
@@ -43,13 +43,13 @@
   },
   "peerDependencies": {
     "eslint": "^9.0.0 || ^10.0.0",
-    "prettier": "^3.0.0",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.0.0"
   },
   "dependencies": {
     "@eslint/js": "^10.0.1",
-    "eslint-config-prettier": "^10.1.8",
+    "@seahax/eslint-plugin-wrap": "^0.6.11",
+    "@stylistic/eslint-plugin": "^5.10.0",
     "eslint-plugin-jsdoc": "^62.9.0",
     "eslint-plugin-perfectionist": "^5.9.0",
     "eslint-plugin-unicorn": "^64.0.0"
@@ -57,7 +57,6 @@
   "devDependencies": {
     "@types/node": "^22.19.19",
     "eslint": "^10.3.0",
-    "prettier": "^3.8.3",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.59.3"
   }
