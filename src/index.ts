@@ -776,6 +776,20 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
         rules: {
           "@stylistic/array-bracket-spacing": ["error", "never"],
           "@stylistic/array-element-newline": "off",
+          // Disallow single-line blocks (e.g. `if (x) { return; }`).
+          // This prevents both manual authoring and auto-fixers from collapsing
+          // multi-line block statements onto a single line. Combined with
+          // `padded-blocks` (without `allowSingleLineBlocks`) below, every
+          // block body must occupy its own line(s).
+          "@stylistic/brace-style": ["error", "1tbs", { allowSingleLine: false }],
+          // Statements following control keywords (if/else/for/while/do)
+          // without braces must be on the next line. With `curly: ["error", "all"]`
+          // braces are always required, but this rule additionally enforces that
+          // a block opening brace's body never shares a line with the brace.
+          "@stylistic/nonblock-statement-body-position": ["error", "below"],
+          // Always require the body of an `if` (and other block-bearing
+          // statements) to be on its own line, never collapsed to one line.
+          "@stylistic/block-spacing": ["error", "always"],
           "@stylistic/comma-dangle": [
             "error",
             {
