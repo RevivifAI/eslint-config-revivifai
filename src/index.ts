@@ -314,6 +314,10 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       stylisticConfig,
       {
         rules: {
+          // ── Array & object spacing ────────────────────────────────────────
+          "@stylistic/array-bracket-spacing": ["error", "never"],
+          "@stylistic/array-element-newline": "off",
+          // ── Comma & delimiter styling ──────────────────────────────────
           "@stylistic/comma-dangle": [
             "error",
             {
@@ -327,7 +331,26 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
               tuples: "always-multiline",
             },
           ],
+          "@stylistic/comma-spacing": ["error", { after: true, before: false }],
+          "@stylistic/computed-property-spacing": [
+            "error",
+            "never",
+            { enforceForClassMembers: true },
+          ],
+          // ── Function spacing ───────────────────────────────────────────
+          "@stylistic/function-call-spacing": ["error", "never"],
+          "@stylistic/function-paren-newline": ["error", "multiline-arguments"],
+          // ── Keyword & key spacing ──────────────────────────────────────
+          "@stylistic/key-spacing": ["error", { afterColon: true, beforeColon: false }],
+          "@stylistic/keyword-spacing": ["error", { after: true, before: true, overrides: {} }],
+          // ── Line & whitespace formatting ────────────────────────────────
           "@stylistic/linebreak-style": ["error", "unix"],
+          // ── Padding & blocks ────────────────────────────────────────────
+          "@stylistic/lines-between-class-members": [
+            "error",
+            "always",
+            { exceptAfterSingleLine: false },
+          ],
           "@stylistic/max-len": [
             "error",
             {
@@ -344,9 +367,59 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
               singleline: { delimiter: "semi", requireLast: false },
             },
           ],
+          "@stylistic/no-mixed-spaces-and-tabs": "error",
+          "@stylistic/no-multi-spaces": ["error", { ignoreEOLComments: false }],
+          "@stylistic/no-multiple-empty-lines": ["error", { max: 1, maxBOF: 0, maxEOF: 0 }],
           "@stylistic/no-tabs": "error",
-          "@stylistic/operator-linebreak": ["error", "before"],
-          "@stylistic/quote-props": ["error", "as-needed"],
+          "@stylistic/no-trailing-spaces": [
+            "error",
+            { ignoreComments: false, skipBlankLines: false },
+          ],
+          "@stylistic/object-curly-newline": [
+            "error",
+            {
+              ExportDeclaration: { consistent: true, minProperties: 4, multiline: true },
+              ImportDeclaration: { consistent: true, minProperties: 4, multiline: true },
+              ObjectExpression: { consistent: true, minProperties: 4, multiline: true },
+              ObjectPattern: { consistent: true, minProperties: 4, multiline: true },
+            },
+          ],
+          "@stylistic/object-curly-spacing": ["error", "always"],
+          "@stylistic/object-property-newline": ["error", { allowAllPropertiesOnSameLine: true }],
+          "@stylistic/operator-linebreak": ["error", "before", { overrides: { "=": "none" } }],
+          "@stylistic/padded-blocks": [
+            "error",
+            { blocks: "never", classes: "never", switches: "never" },
+            { allowSingleLineBlocks: true },
+          ],
+          // ── Quotes & props ──────────────────────────────────────────────
+          "@stylistic/quote-props": [
+            "error",
+            "as-needed",
+            { keywords: false, numbers: false, unnecessary: true },
+          ],
+          // ── Semicolons & parentheses ────────────────────────────────────
+          "@stylistic/semi-spacing": ["error", { after: true, before: false }],
+          "@stylistic/semi-style": ["error", "last"],
+          "@stylistic/space-before-blocks": "error",
+          "@stylistic/space-before-function-paren": [
+            "error",
+            { anonymous: "always", asyncArrow: "always", named: "never" },
+          ],
+          "@stylistic/space-in-parens": ["error", "never"],
+          // ── Comments & template ─────────────────────────────────────────
+          "@stylistic/spaced-comment": [
+            "error",
+            "always",
+            {
+              block: { balanced: true, exceptions: ["-", "+"], markers: ["=", "!", ":", "::"] },
+              line: { exceptions: ["-", "+"], markers: ["=", "!", "/"] },
+            },
+          ],
+          // ── Switch statements ───────────────────────────────────────────
+          "@stylistic/switch-colon-spacing": ["error", { after: true, before: false }],
+          "@stylistic/template-curly-spacing": ["error", "never"],
+          // ── TypeScript-specific ─────────────────────────────────────────
           "@stylistic/type-annotation-spacing": ["error", { after: true, before: false }],
         },
       },
