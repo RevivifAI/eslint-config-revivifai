@@ -454,7 +454,6 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
         "*.js",
         "**/*.mjs",
         "pnpm-lock.yaml",
-        "README.md",
         // YAML and Markdown are handled by dedicated configs below
         // These patterns are only for global ignores, not for file-type-specific linting
         ...ignores,
