@@ -660,6 +660,18 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     });
   }
 
+  // ── Disable rules incompatible with @eslint/markdown ───────────────
+  // ESLint core and plugin rules that use sourceCode.getAllComments() crash on
+  // @eslint/markdown SourceCode objects. These rules are JS-specific and don't apply
+  // to Markdown files.
+  configs.push({
+    files: ["**/*.md"],
+    rules: {
+      "no-irregular-whitespace": "off",
+      "perfectionist/sort-imports": "off",
+    },
+  });
+
   // ── Keep A Changelog format enforcement (v1.1.0) ─────────────────────
   // Rules for CHANGELOG.md and HISTORY.md files following keepachangelog.com
   configs.push({
