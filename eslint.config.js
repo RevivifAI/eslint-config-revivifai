@@ -14,6 +14,7 @@ import json from "@eslint/json";
 import eslint from "@eslint/js";
 import markdown from "@eslint/markdown";
 import stylistic from "@stylistic/eslint-plugin";
+import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 
 const tsconfigRootDir = import.meta.dirname;
@@ -29,7 +30,7 @@ const stylisticBase = stylistic.configs.customize({
   semi: true,
 });
 
-export default tseslint.config(
+export default defineConfig([
   // ── Global ignores ────────────────────────────────────────────────────
   {
     ignores: [
@@ -276,4 +277,4 @@ export default tseslint.config(
       "json/no-empty-keys": "error",
     },
   },
-);
+]);
