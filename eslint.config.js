@@ -4,14 +4,15 @@
  * @file ESLint configuration for this package itself.
  * @description Mirrors the formatting/lint settings produced by this package's
  *   own `createConfig`, but restricted to only the ESLint core, official
- *   `@eslint/*` plugins (incl. JSON), and the `@stylistic/eslint-plugin`. The
- *   other plugins shipped by this package (jsdoc, perfectionist, unicorn,
- *   markdown, yml, wrap, keep-a-changelog) are intentionally NOT applied to
+ *   `@eslint/*` plugins (JS, JSON, Markdown), and the `@stylistic/eslint-plugin`.
+ *   The third-party plugins shipped by this package (jsdoc, perfectionist,
+ *   unicorn, yml, wrap, keep-a-changelog) are intentionally NOT applied to
  *   this repository's own source.
  */
 
-import eslint from "@eslint/js";
 import json from "@eslint/json";
+import eslint from "@eslint/js";
+import markdown from "@eslint/markdown";
 import stylistic from "@stylistic/eslint-plugin";
 import tseslint from "typescript-eslint";
 
@@ -37,7 +38,6 @@ export default tseslint.config(
       ".pnpm-store/",
       "coverage/",
       "pnpm-lock.yaml",
-      "**/*.md",
     ],
   },
 
@@ -237,6 +237,12 @@ export default tseslint.config(
       "@stylistic/type-annotation-spacing": ["error", { after: true, before: false }],
     },
   },
+
+  // ── Markdown linting (official @eslint/markdown language plugin) ──────
+  ...markdown.configs.recommended.map((c) => ({
+    ...c,
+    files: ["**/*.md"],
+  })),
 
   // ── JSON linting (official @eslint/json language plugin) ──────────────
   {
