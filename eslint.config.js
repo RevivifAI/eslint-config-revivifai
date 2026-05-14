@@ -67,9 +67,9 @@ export default defineConfig([
     },
   },
 
-  // ── Disable type-checked rules on plain JS config files ───────────────
+  // ── Disable type-checked rules on non-TypeScript files ─────────────────
   {
-    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.md", "**/*.json", "**/*.jsonc", "**/*.json5", "**/*.yml", "**/*.yaml"],
     ...tseslint.configs.disableTypeChecked,
   },
 
