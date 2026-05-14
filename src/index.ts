@@ -683,6 +683,9 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "@typescript-eslint/return-await": "off",
       "@typescript-eslint/switch-exhaustiveness-check": "off",
       "@typescript-eslint/unbound-method": "off",
+      // Disable stylistic rules for YAML - they don't apply to YAML syntax
+      "@stylistic/spaced-comment": "off",
+      "@stylistic/max-len": "off",
     },
   });
 
