@@ -277,4 +277,14 @@ export default defineConfig([
       "json/no-empty-keys": "error",
     },
   },
+
+  // ── YAML file overrides ─────────────────────────────────────────────────
+  {
+    files: ["**/*.yml", "**/*.yaml"],
+    rules: {
+      // Disable spaced-comment for YAML - the @stylistic rule incorrectly triggers on
+      // YAML # comments that contain */ patterns (it's designed for JS block comments)
+      "@stylistic/spaced-comment": "off",
+    },
+  },
 ]);
