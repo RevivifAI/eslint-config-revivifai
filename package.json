@@ -52,7 +52,8 @@
     "@stylistic/eslint-plugin": "^5.10.0",
     "eslint-plugin-jsdoc": "^62.9.0",
     "eslint-plugin-perfectionist": "^5.9.0",
-    "eslint-plugin-unicorn": "^64.0.0"
+    "eslint-plugin-unicorn": "^64.0.0",
+    "eslint-plugin-yml": "^1.15.0"
   },
   "devDependencies": {
     "@types/node": "^22.19.19",

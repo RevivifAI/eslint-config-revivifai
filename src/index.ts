@@ -16,6 +16,7 @@ import stylistic from "@stylistic/eslint-plugin";
 import jsdoc from "eslint-plugin-jsdoc";
 import perfectionist from "eslint-plugin-perfectionist";
 import unicorn from "eslint-plugin-unicorn";
+import yml from "eslint-plugin-yml";
 import tseslint from "typescript-eslint";
 
 /**
@@ -100,6 +101,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
         "coverage/",
         "*.js",
         "**/*.mjs",
+        "pnpm-lock.yaml",
         ...ignores,
       ],
     },
@@ -115,6 +117,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     {
       languageOptions: {
         parserOptions: {
+          extraFileExtensions: [".yaml"],
           projectService: {
             allowDefaultProject: ["vitest.config.ts", "vite.config.ts", "eslint.config.js"],
           },
@@ -296,6 +299,32 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "no-console": "off",
     },
   });
+
+  // ── YAML linting ───────────────────────────────────────────────────
+  configs.push({
+    files: ["**/*.yml", "**/*.yaml"],
+    plugins: { yml },
+    rules: {
+      "yml/block-mapping": "error",
+      "yml/block-sequence": "error",
+      "yml/flow-mapping-curly-spacing": "error",
+      "yml/flow-sequence-bracket-spacing": "error",
+      // Core YAML rules
+      "yml/indent": ["error", 2],
+      "yml/key-spacing": "error",
+      "yml/no-empty-document": "error",
+      "yml/no-empty-key": "error",
+      "yml/no-empty-mapping-value": "error",
+      "yml/no-empty-sequence-entry": "error",
+      "yml/no-irregular-whitespace": "error",
+      "yml/no-multiple-empty-lines": "error",
+      "yml/no-tab-indent": "error",
+      "yml/quotes": ["error", { avoidEscape: true, prefer: "double" }],
+      "yml/require-string-key": "error",
+      "yml/sort-keys": "error",
+      "yml/spaced-comment": "error",
+    },
+  } as Linter.Config);
 
   // ── Stylistic formatting ───────────────────────────────────────────
   if (enableStylistic) {
