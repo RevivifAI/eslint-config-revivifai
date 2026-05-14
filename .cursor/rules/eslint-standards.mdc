@@ -1,0 +1,46 @@
+---
+description: ESLint configuration standards and best practices for this TypeScript ESLint project
+alwaysApply: false
+---
+
+# ESLint Configuration Standards
+
+This rule defines coding standards for ESLint plugin development in this project.
+
+## General Principles
+
+- All ESLint rules must follow the flat config array format
+- Rules should be configurable via options in the `RevivifaiEslintOptions` interface
+- Use TypeScript for all rule implementations
+- Follow the existing plugin patterns defined in `src/index.ts`
+
+## Rule Structure
+
+When creating new ESLint rules:
+
+1. Define the rule with proper JSDoc documentation
+2. Use `create` function with AST visitor pattern
+3. Set appropriate `meta.type` (problem, suggestion, layout)
+4. Include `meta.docs.description` and `meta.docs.recommended`
+5. Handle both ESLint 9+ and legacy contexts where needed
+
+## Configuration Options
+
+Rules can be toggled via `RevivifaiEslintOptions`:
+
+- `jsdoc`: Enable/disable JSDoc enforcement rules
+- `perfectionist`: Enable/disable import/member sorting
+- `stylistic`: Enable/disable formatting rules
+- `unicorn`: Enable/disable Unicorn rules
+
+## Error Handling
+
+- Use `context.report()` with proper `loc` for error locations
+- Provide actionable error messages with suggestions
+- Include rule name in error messages for clarity
+
+## Testing
+
+- Test files should use `.test.ts` or `.spec.ts` suffix
+- Disable type-checked rules for test files where appropriate
+- Mock ESLint context in unit tests

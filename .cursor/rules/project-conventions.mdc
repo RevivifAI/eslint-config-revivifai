@@ -1,0 +1,52 @@
+---
+description: General project conventions and development workflow
+alwaysApply: true
+---
+
+# Project Conventions
+
+This rule defines general development conventions for the RevivifAI ESLint configuration project.
+
+## Project Structure
+
+- `src/index.ts` - Main ESLint configuration export
+- `eslint.config.js` - Local project ESLint config
+- `.cursor/rules/` - Cursor AI rules (this directory)
+- `dist/` - Compiled JavaScript output
+
+## Build & Lint Commands
+
+```bash
+# Build TypeScript to JavaScript
+pnpm run build
+
+# Run linter
+pnpm run lint
+
+# Auto-fix lint issues
+pnpm run lint:fix
+
+# Full check (lint + build)
+pnpm run check
+```
+
+## Code Style
+
+- Use 2-space indentation
+- Use double quotes for strings
+- Always include semicolons
+- Use named exports, not default exports
+- Follow ESLint stylistic rules from the config
+
+## Git Workflow
+
+- Commit messages should follow conventional commits
+- Run `pnpm run check` before pushing
+- Keep rules under 500 lines and split if needed
+
+## When Working with Cursor
+
+- Read relevant source files before proposing changes
+- Reference existing patterns in the codebase
+- Test rules locally before committing
+- Update this rule file when patterns change

@@ -696,14 +696,20 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     });
   }
 
-  // ── Disable rules incompatible with @eslint/markdown ───────────────
-  // ESLint core and plugin rules that use sourceCode.getAllComments() crash on
-  // @eslint/markdown SourceCode objects. These rules are JS-specific and don't apply
-  // to Markdown files.
-  // Also disable TypeScript type-checked rules that require parser services.
+  // ── Disable ALL TypeScript linting for Markdown files ──────────────
+  // Markdown is not TypeScript, so every @typescript-eslint/* rule is turned
+  // off. We collect every rule name from the typescript-eslint plugin and
+  // disable each one for *.md files. Also disables core/perfectionist rules
+  // that are incompatible with the @eslint/markdown SourceCode object.
+  const tsPluginRules = (tseslint.plugin as { rules?: Record<string, unknown> }).rules ?? {};
+  const disabledTypescriptRulesForMarkdown: Linter.RulesRecord = Object.fromEntries(
+    Object.keys(tsPluginRules).map((ruleName) => [`@typescript-eslint/${ruleName}`, "off"]),
+  );
+
   configs.push({
     files: ["**/*.md"],
     rules: {
+      ...disabledTypescriptRulesForMarkdown,
       "no-irregular-whitespace": "off",
       "perfectionist/sort-imports": "off",
       "perfectionist/sort-modules": "off",
@@ -715,23 +721,6 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "perfectionist/sort-named-imports": "off",
       "perfectionist/sort-exports": "off",
       "perfectionist/sort-decorators": "off",
-      // Disable TypeScript type-checked rules for Markdown files
-      // These rules require type information which is only available for TS files
-      "@typescript-eslint/await-thenable": "off",
-      "@typescript-eslint/no-confusing-void-expression": "off",
-      "@typescript-eslint/no-deprecated": "off",
-      "@typescript-eslint/no-floating-promises": "off",
-      "@typescript-eslint/no-misused-promises": "off",
-      "@typescript-eslint/no-redundant-type-constituents": "off",
-      "@typescript-eslint/no-unnecessary-condition": "off",
-      "@typescript-eslint/prefer-literal-enum-member": "off",
-      "@typescript-eslint/prefer-nullish-coalescing": "off",
-      "@typescript-eslint/prefer-optional-chain": "off",
-      "@typescript-eslint/require-array-sort-compare": "off",
-      "@typescript-eslint/restrict-template-expressions": "off",
-      "@typescript-eslint/return-await": "off",
-      "@typescript-eslint/switch-exhaustiveness-check": "off",
-      "@typescript-eslint/unbound-method": "off",
     },
   });
 

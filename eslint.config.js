@@ -69,7 +69,7 @@ export default defineConfig([
 
   // ── Disable type-checked rules on non-TypeScript files ─────────────────
   {
-    files: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.md", "**/*.json", "**/*.jsonc", "**/*.json5", "**/*.yml", "**/*.yaml"],
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs", "**/*.md", "**/*.mdc", "**/*.json", "**/*.jsonc", "**/*.json5", "**/*.yml", "**/*.yaml"],
     ...tseslint.configs.disableTypeChecked,
   },
 
@@ -244,6 +244,19 @@ export default defineConfig([
     ...c,
     files: ["**/*.md"],
   })),
+
+  // ── MDC file linting (Cursor rules - markdown with YAML frontmatter) ──
+  ...markdown.configs.recommended.map((c) => ({
+    ...c,
+    files: ["**/*.mdc"],
+  })),
+  {
+    files: ["**/*.mdc"],
+    rules: {
+      // Disable spaced-comment for MDC - prevents false positives in YAML frontmatter
+      "@stylistic/spaced-comment": "off",
+    },
+  },
 
   // ── JSON linting (official @eslint/json language plugin) ──────────────
   {
