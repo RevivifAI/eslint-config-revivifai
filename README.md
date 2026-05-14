@@ -1,15 +1,22 @@
 # @revivifai/eslint-config
 
+[![npm version](https://img.shields.io/npm/v/@revivifai/eslint-config.svg)](https://www.npmjs.com/package/@revivifai/eslint-config)
+[![npm downloads](https://img.shields.io/npm/dm/@revivifai/eslint-config.svg)](https://www.npmjs.com/package/@revivifai/eslint-config)
+[![License](https://img.shields.io/npm/l/@revivifai/eslint-config.svg)](https://github.com/RevivifAI/eslint-config-revivifai/blob/main/LICENSE)
+
 A comprehensive, modern ESLint flat config for TypeScript projects with strict type checking, JSDoc enforcement, import sorting, and Prettier compatibility.
 
 ## Features
 
-- **ESLint 9+ Flat Config** — Modern configuration format using `defineConfig` from `eslint/config`
+- **ESLint 10+ Flat Config** — Modern configuration format using `defineConfig` from `eslint/config`
 - **TypeScript Strict** — `strictTypeChecked` and `stylisticTypeChecked` from `typescript-eslint`
 - **JSDoc Enforcement** — Comprehensive JSDoc linting with 40+ rules
 - **Import Sorting** — Automatic import/member sorting via `eslint-plugin-perfectionist`
 - **Unicorn Rules** — Additional best-practice rules from `eslint-plugin-unicorn`
 - **Stylistic Formatting** — Comprehensive code formatting via `@stylistic/eslint-plugin` and `@seahax/eslint-plugin-wrap`
+- **YAML Linting** — Full YAML file support via `eslint-plugin-yml`
+- **Markdown Linting** — Markdown file support via `@eslint/markdown`
+- **Keep A Changelog** — Custom rules enforcing [Keep A Changelog v1.1.0](https://keepachangelog.com/en/1.1.0/) format
 
 ## Installation
 
@@ -22,10 +29,15 @@ pnpm add -D @revivifai/eslint-config
 This package requires the following peer dependencies:
 
 ```bash
-pnpm add -D eslint@^10 typescript typescript-eslint
+pnpm add -D eslint@^10 typescript@^5 typescript-eslint@^8
 ```
 
-**ESLint Compatibility:** Supports ESLint 9.x and 10.x (ESLint 10 is the latest stable release).
+### Requirements
+
+- **Node.js**: >= 20.0.0
+- **ESLint**: 10.x
+- **TypeScript**: ^5.0.0
+- **typescript-eslint**: ^8.0.0
 
 ## Usage
 
@@ -155,6 +167,36 @@ Comprehensive JSDoc enforcement including:
 - `prefer-const` — Prefer const declarations
 - `prefer-arrow-callback` — Arrow functions for callbacks
 - `padding-line-between-statements` — Consistent whitespace around declarations
+- `no-eval` — Disallow `eval`
+- `no-var` — Disallow `var` declarations
+- `object-shorthand` — Require shorthand object properties
+- `prefer-template` — Prefer template literals over string concatenation
+
+### YAML (`eslint-plugin-yml`)
+
+Full YAML file linting with rules including:
+
+- `yml/block-mapping` — Enforce block mapping style
+- `yml/block-sequence` — Enforce block sequence style
+- `yml/indent` — Consistent 2-space indentation
+- `yml/quotes` — Double quotes preference
+- `yml/sort-keys` — Sorted YAML keys
+- And more
+
+### Markdown (`@eslint/markdown`)
+
+Native ESLint 10+ Markdown support using `@eslint/markdown`. Provides recommended linting for `.md` files with automatic TypeScript type-checked rule disablement for non-TS files.
+
+### Keep A Changelog
+
+Custom plugin enforcing [Keep A Changelog v1.1.0](https://keepachangelog.com/en/1.1.0/) format for `CHANGELOG.md`, `HISTORY.md`, `NEWS.md`, and `RELEASES.md` files:
+
+- `no-empty-sections` — Disallow empty change categories
+- `require-change-categories` — Ensure standard categories (Added, Changed, Deprecated, Removed, Fixed, Security)
+- `require-change-item-format` — Require imperative mood for change items
+- `require-date-format` — ISO date format (YYYY-MM-DD) for version headers
+- `require-semantic-versioning-order` — Versions in reverse chronological order
+- `require-unreleased-section` — Suggest `[Unreleased]` section
 
 ## Test File Relaxations
 
@@ -180,16 +222,19 @@ The default formatting style is:
 
 ## Comparison with Airbnb Configs
 
-| Feature        | @revivifai/eslint-config   | eslint-config-airbnb-extended |
-| -------------- | -------------------------- | ----------------------------- |
-| Config Format  | ✅ Flat config (ESLint 9+) | ✅ Flat config (ESLint 9+)    |
-| TypeScript     | ✅ strictTypeChecked       | ✅ TypeScript support         |
-| JSDoc          | ✅ 40+ rules               | ❌ Not included               |
-| Import Sorting | ✅ Perfectionist           | ✅ import-x                   |
-| Unicorn        | ✅ Built-in                | ❌ Not included               |
-| React/JSX      | ❌ Not configured          | ✅ React, hooks, a11y         |
-| Node.js        | ❌ Not configured          | ✅ eslint-plugin-n            |
-| Formatting     | ✅ ESLint Stylistic        | ✅ ESLint Stylistic           |
+| Feature           | @revivifai/eslint-config   | eslint-config-airbnb-extended |
+| ----------------- | -------------------------- | ----------------------------- |
+| Config Format     | ✅ Flat config (ESLint 9+) | ✅ Flat config (ESLint 9+)    |
+| TypeScript        | ✅ strictTypeChecked       | ✅ TypeScript support         |
+| JSDoc             | ✅ 40+ rules               | ❌ Not included               |
+| Import Sorting    | ✅ Perfectionist           | ✅ import-x                   |
+| Unicorn           | ✅ Built-in                | ❌ Not included               |
+| YAML Linting      | ✅ eslint-plugin-yml       | ❌ Not included               |
+| Markdown Linting  | ✅ @eslint/markdown        | ❌ Not included               |
+| Keep A Changelog  | ✅ Built-in                | ❌ Not included               |
+| React/JSX         | ❌ Not configured          | ✅ React, hooks, a11y         |
+| Node.js           | ❌ Not configured          | ✅ eslint-plugin-n            |
+| Formatting        | ✅ ESLint Stylistic        | ✅ ESLint Stylistic           |
 
 ## License
 

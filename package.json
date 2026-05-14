@@ -43,25 +43,25 @@
     "node": ">=20.0.0"
   },
   "peerDependencies": {
-    "eslint": "^9.0.0 || ^10.0.0",
+    "eslint": "^10.0.0",
     "typescript": "^5.0.0",
     "typescript-eslint": "^8.0.0"
   },
   "dependencies": {
     "@eslint/js": "^10.0.1",
+    "@eslint/json": "^1.2.0",
     "@eslint/markdown": "^8.0.1",
     "@seahax/eslint-plugin-wrap": "^0.6.11",
     "@stylistic/eslint-plugin": "^5.10.0",
     "eslint-plugin-jsdoc": "^62.9.0",
     "eslint-plugin-perfectionist": "^5.9.0",
     "eslint-plugin-unicorn": "^64.0.0",
-    "eslint-plugin-yml": "^1.19.1"
+    "eslint-plugin-yml": "^3.3.2"
   },
   "devDependencies": {
-    "@eslint/json": "^1.2.0",
-    "@types/node": "^22.19.19",
+    "@types/node": "^25.7.0",
     "eslint": "^10.3.0",
-    "typescript": "^5.9.3",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.3"
   }
 }

@@ -444,7 +444,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
   } = options;
 
   const configs: Linter.Config[] = [
-    // ── Global ignores ──────────────────────────────────────────────────
+    // ── Global ignores (non-JS/TS files are handled by dedicated configs below) ─
     {
       ignores: [
         "dist/",
@@ -455,24 +455,35 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
         "**/*.mjs",
         "pnpm-lock.yaml",
         "README.md",
+        // YAML and Markdown are handled by dedicated configs below
+        // These patterns are only for global ignores, not for file-type-specific linting
         ...ignores,
       ],
     },
 
-    // ── Base JS recommended rules ───────────────────────────────────────
-    eslint.configs.recommended,
+    // ── Base JS recommended rules (JS/TS files only) ───────────────────
+    {
+      ...eslint.configs.recommended,
+      files: ["**/*.js", "**/*.cjs", "**/*.mjs", "**/*.ts", "**/*.tsx"],
+    },
 
-    // ── TypeScript strict + stylistic ───────────────────────────────────
-    ...tseslint.configs.strictTypeChecked,
-    ...tseslint.configs.stylisticTypeChecked,
+    // ── TypeScript strict + stylistic (applied to TS files only) ───────
+    ...tseslint.configs.strictTypeChecked.map((config) => ({
+      ...config,
+      files: ["**/*.ts", "**/*.tsx"],
+    })),
+    ...tseslint.configs.stylisticTypeChecked.map((config) => ({
+      ...config,
+      files: ["**/*.ts", "**/*.tsx"],
+    })),
 
     // ── Type-aware linting config ───────────────────────────────────────
     {
+      files: ["**/*.ts", "**/*.tsx"],
       languageOptions: {
         parserOptions: {
-          extraFileExtensions: [".yaml"],
           projectService: {
-            allowDefaultProject: ["vitest.config.ts", "vite.config.ts", "eslint.config.js"],
+            allowDefaultProject: ["vitest.config.ts", "vite.config.ts", "eslint.config.js", "pnpm-workspace.yaml"],
           },
           tsconfigRootDir,
         },
@@ -561,8 +572,9 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     });
   }
 
-  // ── Project-specific overrides ──────────────────────────────────────
+  // ── Project-specific overrides (TS files only) ──────────────────────
   configs.push({
+    files: ["**/*.ts", "**/*.tsx"],
     rules: {
       "@typescript-eslint/consistent-indexed-object-style": "error",
       "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
@@ -626,6 +638,15 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
   });
 
   // ── YAML linting ───────────────────────────────────────────────────
+  // Extend yml plugin's flat/standard config so YAML files are parsed with
+  // the YAML parser instead of ESLint's default JavaScript parser.
+  for (const config of yml.configs["flat/standard"]) {
+    configs.push({
+      ...config,
+      files: ["**/*.yml", "**/*.yaml"],
+    });
+  }
+
   configs.push({
     files: ["**/*.yml", "**/*.yaml"],
     plugins: { yml },
@@ -647,8 +668,24 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "yml/require-string-key": "error",
       "yml/sort-keys": "error",
       "yml/spaced-comment": "error",
+      // Disable TypeScript type-checked rules for YAML files
+      "@typescript-eslint/await-thenable": "off",
+      "@typescript-eslint/no-confusing-void-expression": "off",
+      "@typescript-eslint/no-deprecated": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/no-redundant-type-constituents": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/prefer-literal-enum-member": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@typescript-eslint/require-array-sort-compare": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/return-await": "off",
+      "@typescript-eslint/switch-exhaustiveness-check": "off",
+      "@typescript-eslint/unbound-method": "off",
     },
-  } as Linter.Config);
+  });
 
   // ── Markdown linting ───────────────────────────────────────────────
   // Uses @eslint/markdown (ESLint 10+ native language support).
@@ -664,11 +701,38 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
   // ESLint core and plugin rules that use sourceCode.getAllComments() crash on
   // @eslint/markdown SourceCode objects. These rules are JS-specific and don't apply
   // to Markdown files.
+  // Also disable TypeScript type-checked rules that require parser services.
   configs.push({
     files: ["**/*.md"],
     rules: {
       "no-irregular-whitespace": "off",
       "perfectionist/sort-imports": "off",
+      "perfectionist/sort-modules": "off",
+      "perfectionist/sort-objects": "off",
+      "perfectionist/sort-enums": "off",
+      "perfectionist/sort-interfaces": "off",
+      "perfectionist/sort-classes": "off",
+      "perfectionist/sort-named-exports": "off",
+      "perfectionist/sort-named-imports": "off",
+      "perfectionist/sort-exports": "off",
+      "perfectionist/sort-decorators": "off",
+      // Disable TypeScript type-checked rules for Markdown files
+      // These rules require type information which is only available for TS files
+      "@typescript-eslint/await-thenable": "off",
+      "@typescript-eslint/no-confusing-void-expression": "off",
+      "@typescript-eslint/no-deprecated": "off",
+      "@typescript-eslint/no-floating-promises": "off",
+      "@typescript-eslint/no-misused-promises": "off",
+      "@typescript-eslint/no-redundant-type-constituents": "off",
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/prefer-literal-enum-member": "off",
+      "@typescript-eslint/prefer-nullish-coalescing": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@typescript-eslint/require-array-sort-compare": "off",
+      "@typescript-eslint/restrict-template-expressions": "off",
+      "@typescript-eslint/return-await": "off",
+      "@typescript-eslint/switch-exhaustiveness-check": "off",
+      "@typescript-eslint/unbound-method": "off",
     },
   });
 
@@ -680,6 +744,10 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "keep-a-changelog": keepAChangelogPlugin,
     },
     rules: {
+      // Disable markdown/no-missing-label-refs for changelogs
+      // Keep A Changelog format uses version references like [2.0.0] that may
+      // reference versions not yet defined at the bottom of the file
+      "markdown/no-missing-label-refs": "off",
       "keep-a-changelog/no-empty-sections": "error",
       "keep-a-changelog/require-change-categories": "warn",
       "keep-a-changelog/require-change-item-format": "warn",
@@ -799,7 +867,18 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
           ],
           "@stylistic/switch-colon-spacing": ["error", { after: true, before: false }],
           "@stylistic/template-curly-spacing": ["error", "never"],
-          "@stylistic/type-annotation-spacing": ["error", { after: true, before: false }],
+          // Use "ignore" for arrow to let @stylistic/arrow-spacing handle the '=>' token spacing.
+          // This avoids circular fix conflicts between type-annotation-spacing and arrow-spacing.
+          "@stylistic/type-annotation-spacing": [
+            "error",
+            {
+              after: true,
+              before: false,
+              overrides: {
+                arrow: "ignore",
+              },
+            },
+          ],
         },
       },
       wrap.config({ maxLen: 100 }),
