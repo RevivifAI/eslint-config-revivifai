@@ -14,6 +14,8 @@ import eslint from "@eslint/js";
 import wrap from "@seahax/eslint-plugin-wrap";
 import stylistic from "@stylistic/eslint-plugin";
 import jsdoc from "eslint-plugin-jsdoc";
+import markdownlint from "eslint-plugin-markdownlint";
+import markdownlintParser from "eslint-plugin-markdownlint/parser.js";
 import perfectionist from "eslint-plugin-perfectionist";
 import unicorn from "eslint-plugin-unicorn";
 import yml from "eslint-plugin-yml";
@@ -102,6 +104,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
         "*.js",
         "**/*.mjs",
         "pnpm-lock.yaml",
+        "README.md",
         ...ignores,
       ],
     },
@@ -325,6 +328,20 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "yml/spaced-comment": "error",
     },
   } as Linter.Config);
+
+  // ── Markdown linting ───────────────────────────────────────────────
+  // Uses eslint-plugin-markdownlint with its custom parser.
+  // Must be isolated from type-aware TS configs since Markdown is not TypeScript.
+  configs.push({
+    files: ["**/*.md"],
+    languageOptions: {
+      parser: markdownlintParser,
+    },
+    plugins: { markdownlint },
+    rules: {
+      ...markdownlint.configs.recommended.rules,
+    },
+  });
 
   // ── Stylistic formatting ───────────────────────────────────────────
   if (enableStylistic) {
