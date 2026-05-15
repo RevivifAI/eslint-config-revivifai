@@ -141,7 +141,7 @@ export default defineConfig([
   // ── ESLint rule implementation relaxations ─────────────────────────────
   // SDL rules implement ESLint rules which work with untyped AST nodes
   {
-    files: ["src/sdl-rules.ts"],
+    files: ["src/sdl-plugin.ts"],
     rules: {
       "@typescript-eslint/no-unnecessary-condition": "off",
       "@typescript-eslint/no-unsafe-assignment": "off",

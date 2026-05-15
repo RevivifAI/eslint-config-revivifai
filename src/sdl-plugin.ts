@@ -27,7 +27,6 @@ function isTypeScriptParserServices(parserServices: unknown): parserServices is 
   return Boolean(
     parserServices
     && typeof parserServices === "object"
-    && parserServices !== null
     && "program" in parserServices
     && "esTreeNodeToTSNodeMap" in parserServices,
   );
@@ -37,9 +36,9 @@ function isTypeScriptParserServices(parserServices: unknown): parserServices is 
  * Get the TypeScript type checker if available.
  */
 function getFullTypeChecker(context: Rule.RuleContext): import("typescript").TypeChecker | null {
-  const parserServices = context.sourceCode?.parserServices;
+  const parserServices = context.sourceCode.parserServices;
 
-  if (!parserServices || !isTypeScriptParserServices(parserServices)) {
+  if (!isTypeScriptParserServices(parserServices)) {
     return null;
   }
 

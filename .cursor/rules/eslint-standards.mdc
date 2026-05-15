@@ -22,7 +22,7 @@ When creating new ESLint rules:
 2. Use `create` function with AST visitor pattern
 3. Set appropriate `meta.type` (problem, suggestion, layout)
 4. Include `meta.docs.description` and `meta.docs.recommended`
-5. Handle both ESLint 9+ and legacy contexts where needed
+5. Handle only a ESLint 10+ context.
 
 ## Configuration Options
 
