@@ -16,9 +16,12 @@ import wrap from "@seahax/eslint-plugin-wrap";
 import stylistic from "@stylistic/eslint-plugin";
 import jsdoc from "eslint-plugin-jsdoc";
 import perfectionist from "eslint-plugin-perfectionist";
+import security from "eslint-plugin-security";
 import unicorn from "eslint-plugin-unicorn";
 import yml from "eslint-plugin-yml";
 import tseslint from "typescript-eslint";
+
+import { sdlPlugin } from "./sdl-rules.js";
 
 // ────────────────────────────────────────────────────────────────────────
 // Keep A Changelog Plugin (v1.1.0 specification)
@@ -393,6 +396,14 @@ export interface RevivifaiEslintOptions {
   perfectionist?: boolean;
 
   /**
+   * Whether to enable security rules (includes eslint-plugin-security and SDL rules).
+   * Security rules help identify potential vulnerabilities and security hotspots.
+   * Note: Some rules produce false positives and require human triage.
+   * @default true
+   */
+  security?: boolean;
+
+  /**
    * Whether to enable Stylistic formatting rules.
    * @default true
    */
@@ -437,6 +448,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     ignores = [],
     jsdoc: enableJsdoc = true,
     perfectionist: enablePerfectionist = true,
+    security: enableSecurity = true,
     stylistic: enableStylistic = true,
     tsconfigRootDir = process.cwd(),
     typeCheckingFiles = ["**/*.ts", "**/*.tsx"],
@@ -571,6 +583,72 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     });
   }
 
+  // ── Security rules (eslint-plugin-security + SDL) ───────────────────
+  // Security rules help identify potential vulnerabilities and security hotspots.
+  // Includes both eslint-plugin-security rules and custom SDL (Security Development
+  // Lifecycle) rules inspired by Microsoft's eslint-plugin-sdl.
+  // Note: Some rules produce false positives and require human triage.
+  // See: https://github.com/eslint-community/eslint-plugin-security
+  // See: https://github.com/microsoft/eslint-plugin-sdl
+  if (enableSecurity) {
+    configs.push({
+      files: ["**/*.js", "**/*.cjs", "**/*.mjs", "**/*.ts", "**/*.tsx"],
+      plugins: {
+        security,
+        "@revivifai/sdl": sdlPlugin,
+      },
+      rules: {
+        // ── eslint-plugin-security rules ───────────────────────────────
+        // Detects trojan source attacks using unicode bidi characters
+        "security/detect-bidi-characters": "error",
+        // Detects calls to Buffer with noAssert flag set
+        "security/detect-buffer-noassert": "error",
+        // Detects child_process and non-literal exec() calls
+        "security/detect-child-process": "error",
+        // Detects disabled HTML entity escaping in template engines
+        "security/detect-disable-mustache-escape": "error",
+        // Detects eval(variable) allowing arbitrary code execution
+        "security/detect-eval-with-expression": "error",
+        // Detects new Buffer(non-literal) which can expose memory
+        "security/detect-new-buffer": "error",
+        // Detects CSRF middleware setup before method-override
+        "security/detect-no-csrf-before-method-override": "error",
+        // Detects variable in fs filename argument (path traversal risk)
+        "security/detect-non-literal-fs-filename": "error",
+        // Detects RegExp(variable) which can cause ReDoS
+        "security/detect-non-literal-regexp": "error",
+        // Detects require(variable) allowing arbitrary code loading
+        "security/detect-non-literal-require": "error",
+        // Detects variable[key] assignment - HIGH FALSE POSITIVE RATE
+        // Common in legitimate code (obj[key], arr[i], map.get(x))
+        "security/detect-object-injection": "warn",
+        // Detects timing-attack vulnerable comparisons
+        "security/detect-possible-timing-attacks": "error",
+        // Detects pseudoRandomBytes which may lack needed randomness
+        "security/detect-pseudoRandomBytes": "error",
+        // Detects potentially unsafe regex (ReDoS vulnerability)
+        "security/detect-unsafe-regex": "error",
+
+        // ── SDL (Security Development Lifecycle) rules ───────────────────
+        // Core security rules from Microsoft's SDL
+        "no-delete-var": "error",
+        "no-new-func": "error",
+        // DOM XSS prevention
+        "@revivifai/sdl/no-inner-html": "error",
+        "@revivifai/sdl/no-document-write": "error",
+        "@revivifai/sdl/no-document-domain": "error",
+        "@revivifai/sdl/no-html-method": "warn",
+        // Insecure protocol detection
+        "@revivifai/sdl/no-insecure-url": "error",
+        // Cross-origin security
+        "@revivifai/sdl/no-postmessage-star-origin": "error",
+        // Node.js security
+        "@revivifai/sdl/no-unsafe-alloc": "error",
+        "@revivifai/sdl/no-insecure-random": "error",
+      },
+    });
+  }
+
   // ── Project-specific overrides (TS files only) ──────────────────────
   configs.push({
     files: ["**/*.ts", "**/*.tsx"],
@@ -601,8 +679,19 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       eqeqeq: ["error", "always"],
       "no-console": "warn",
       "no-eval": "error",
+      // Disabled: @typescript-eslint/no-implied-eval (from strictTypeChecked) provides
+      // superior type-aware detection of setTimeout/setInterval with string arguments,
+      // catching cases the core rule misses. The TypeScript version also properly
+      // handles function signatures and avoids false positives on typed callbacks.
       "no-implied-eval": "off",
+      // Disabled: @typescript-eslint/return-await (configured above with "in-try-catch")
+      // provides smarter enforcement. It requires `return await` inside try-catch blocks
+      // (for proper stack traces) but doesn't flag it outside (where it's merely redundant).
       "no-return-await": "off",
+      // Disabled: TypeScript's strict mode and @typescript-eslint rules provide better
+      // enforcement. The no-floating-promises and no-misused-promises rules ensure proper
+      // async error handling, and TypeScript's type system naturally guides users to
+      // throw Error objects rather than literals.
       "no-throw-literal": "off",
       "no-useless-escape": "error",
       "no-var": "error",
@@ -622,6 +711,8 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
   });
 
   // ── Test file overrides ─────────────────────────────────────────────
+  // Test files often intentionally use patterns flagged by security rules
+  // (dynamic requires, child_process for test fixtures, etc.)
   configs.push({
     files: ["test/**/*.ts", "tests/**/*.ts", "**/*.test.ts", "**/*.spec.ts"],
     rules: {
@@ -633,6 +724,12 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "@typescript-eslint/no-unsafe-return": "off",
       "@typescript-eslint/unbound-method": "off",
       "no-console": "off",
+      // Security rules - relaxed for test files
+      // Tests don't run in production and often need these patterns for fixtures/mocking
+      "security/detect-child-process": "off",
+      "security/detect-non-literal-fs-filename": "off",
+      "security/detect-non-literal-require": "off",
+      "security/detect-object-injection": "off",
     },
   });
 

@@ -25,10 +25,20 @@
   },
   "keywords": [
     "eslint",
-    "eslintconfig",
+    "eslint-config",
     "typescript",
+    "typescript-eslint",
+    "linting",
+    "code-quality",
+    "code-formatting",
+    "flat-config",
+    "jsdoc",
+    "import-sorting",
+    "unicorn",
     "stylistic",
-    "revivifai"
+    "nodejs",
+    "revivifai",
+    "security"
   ],
   "author": "RevivifAI",
   "license": "Apache-2.0",
@@ -55,6 +65,7 @@
     "@stylistic/eslint-plugin": "^5.10.0",
     "eslint-plugin-jsdoc": "^62.9.0",
     "eslint-plugin-perfectionist": "^5.9.0",
+    "eslint-plugin-security": "^3.0.1",
     "eslint-plugin-unicorn": "^64.0.0",
     "eslint-plugin-yml": "^3.3.2"
   },

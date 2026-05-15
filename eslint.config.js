@@ -138,6 +138,23 @@ export default defineConfig([
     },
   },
 
+  // ── ESLint rule implementation relaxations ─────────────────────────────
+  // SDL rules implement ESLint rules which work with untyped AST nodes
+  {
+    files: ["src/sdl-rules.ts"],
+    rules: {
+      "@typescript-eslint/no-unnecessary-condition": "off",
+      "@typescript-eslint/no-unsafe-assignment": "off",
+      "@typescript-eslint/no-unsafe-member-access": "off",
+      "@typescript-eslint/no-unsafe-call": "off",
+      "@typescript-eslint/no-unsafe-return": "off",
+      "@typescript-eslint/no-unsafe-argument": "off",
+      "@typescript-eslint/no-unnecessary-type-assertion": "off",
+      "@typescript-eslint/prefer-optional-chain": "off",
+      "@stylistic/indent-binary-ops": "off",
+    },
+  },
+
   // ── Stylistic formatting (JS/TS files only) ───────────────────────────
   { files: ["**/*.{js,mjs,cjs,ts,tsx,mts,cts}"], ...stylisticBase },
   {
