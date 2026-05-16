@@ -13,6 +13,7 @@ A comprehensive, modern ESLint flat config for TypeScript projects with strict t
 - **JSDoc Enforcement** — Comprehensive JSDoc linting with 40+ rules
 - **Import Sorting** — Automatic import/member sorting via `eslint-plugin-perfectionist`
 - **Unicorn Rules** — Additional best-practice rules from `eslint-plugin-unicorn`
+- **Security Rules** — Comprehensive security linting via `eslint-plugin-security` and custom SDL rules
 - **Stylistic Formatting** — Comprehensive code formatting via `@stylistic/eslint-plugin` and `@seahax/eslint-plugin-wrap`
 - **YAML Linting** — Full YAML file support via `eslint-plugin-yml`
 - **Markdown Linting** — Markdown file support via `@eslint/markdown`
@@ -87,6 +88,12 @@ interface RevivifaiEslintOptions {
   perfectionist?: boolean;
 
   /**
+   * Whether to enable security rules (includes eslint-plugin-security and SDL rules).
+   * @default true
+   */
+  security?: boolean;
+
+  /**
    * Whether to enable Stylistic formatting rules.
    * @default true
    */
@@ -125,6 +132,31 @@ export default createConfig({
 });
 ```
 
+### Example: Disable Specific Security Rules
+
+If you find certain security rules too noisy (like `security/detect-object-injection`), you can disable them using standard ESLint overrides:
+
+```javascript
+// @ts-check
+import { createConfig } from "@revivifai/eslint-config";
+
+export default [
+  ...createConfig({
+    tsconfigRootDir: import.meta.dirname,
+  }),
+  {
+    files: ["**/*.ts", "**/*.tsx"],
+    rules: {
+      // Disabling object-injection as it has a high false-positive rate in 
+      // projects that frequently use dynamic keys. 
+      // NOTE: Each reported case should still be audited for potential 
+      // prototype pollution or other injection vulnerabilities.
+      "security/detect-object-injection": "off",
+    },
+  },
+];
+```
+
 ## Included Rules
 
 ### TypeScript Strict Type-Checked
@@ -158,6 +190,18 @@ Comprehensive JSDoc enforcement including:
 ### Perfectionist
 
 - `recommended-natural` — Natural sorting for imports and members
+
+### Security (eslint-plugin-security + SDL)
+
+Comprehensive security enforcement including:
+
+- `security/detect-child-process` — Detects `child_process` and non-literal `exec()` calls
+- `security/detect-object-injection` — Detects variable[key] assignment (warn)
+- `security/detect-unsafe-regex` — Detects potentially unsafe regex (ReDoS)
+- `@revivifai/sdl/no-inner-html` — Prevents DOM XSS via `innerHTML`
+- `@revivifai/sdl/no-insecure-url` — Detects insecure `http://` protocols
+- `@revivifai/sdl/no-insecure-random` — Disallows cryptographically weak PRNGs
+- And 20+ more security rules
 
 ### General Best Practices
 
@@ -232,6 +276,7 @@ The default formatting style is:
 | YAML Linting      | ✅ eslint-plugin-yml       | ❌ Not included               |
 | Markdown Linting  | ✅ @eslint/markdown        | ❌ Not included               |
 | Keep A Changelog  | ✅ Built-in                | ❌ Not included               |
+| Security          | ✅ Security + SDL          | ❌ Not included               |
 | React/JSX         | ❌ Not configured          | ✅ React, hooks, a11y         |
 | Node.js           | ❌ Not configured          | ✅ eslint-plugin-n            |
 | Formatting        | ✅ ESLint Stylistic        | ✅ ESLint Stylistic           |
