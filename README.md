@@ -13,6 +13,7 @@ A comprehensive, modern ESLint flat config for TypeScript projects with strict t
 - **JSDoc Enforcement** — Comprehensive JSDoc linting with 40+ rules
 - **Import Sorting** — Automatic import/member sorting via `eslint-plugin-perfectionist`
 - **Unicorn Rules** — Additional best-practice rules from `eslint-plugin-unicorn`
+- **Vitest Rules** — Test-specific linting via `@vitest/eslint-plugin`
 - **Security Rules** — Comprehensive security linting via `eslint-plugin-security` and custom SDL rules
 - **Stylistic Formatting** — Comprehensive code formatting via `@stylistic/eslint-plugin` and `@seahax/eslint-plugin-wrap`
 - **YAML Linting** — Full YAML file support via `eslint-plugin-yml`
@@ -98,6 +99,12 @@ interface RevivifaiEslintOptions {
    * @default true
    */
   stylistic?: boolean;
+
+  /**
+   * Whether to enable Vitest rules for test files.
+   * @default true
+   */
+  vitest?: boolean;
 
   /**
    * Additional ignore patterns.
@@ -191,12 +198,23 @@ Comprehensive JSDoc enforcement including:
 
 - `recommended-natural` — Natural sorting for imports and members
 
+### Vitest (@vitest/eslint-plugin)
+
+Enforces best practices for Vitest test files with recommended rules including:
+
+- `vitest/no-disabled-tests` — Disallow disabled tests
+- `vitest/no-focused-tests` — Disallow focused tests
+- `vitest/no-identical-title` — Disallow identical test titles
+- `vitest/expect-expect` — Enforce expectations in tests
+- `vitest/no-commented-out-tests` — Disallow commented-out tests
+- And more from the `recommended` config
+
 ### Security (eslint-plugin-security + SDL)
 
 Comprehensive security enforcement including:
 
 - `security/detect-child-process` — Detects `child_process` and non-literal `exec()` calls
-- `security/detect-object-injection` — Detects variable[key] assignment (warn)
+- `security/detect-object-injection` — Detects variable\[key\] assignment (warn)
 - `security/detect-unsafe-regex` — Detects potentially unsafe regex (ReDoS)
 - `@revivifai/sdl/no-inner-html` — Prevents DOM XSS via `innerHTML`
 - `@revivifai/sdl/no-insecure-url` — Detects insecure `http://` protocols

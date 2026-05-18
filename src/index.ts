@@ -18,6 +18,7 @@ import jsdoc from "eslint-plugin-jsdoc";
 import perfectionist from "eslint-plugin-perfectionist";
 import security from "eslint-plugin-security";
 import unicorn from "eslint-plugin-unicorn";
+import vitest from "@vitest/eslint-plugin";
 import yml from "eslint-plugin-yml";
 import tseslint from "typescript-eslint";
 
@@ -72,6 +73,12 @@ export interface RevivifaiEslintOptions {
   typeCheckingFiles?: string[];
 
   /**
+   * Whether to enable Vitest rules for test files.
+   * @default true
+   */
+  vitest?: boolean;
+
+  /**
    * Whether to enable Unicorn rules.
    * @default true
    */
@@ -103,6 +110,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
     tsconfigRootDir = process.cwd(),
     typeCheckingFiles = ["**/*.ts", "**/*.tsx"],
     unicorn: enableUnicorn = true,
+    vitest: enableVitest = true,
   } = options;
 
   const configs: Linter.Config[] = [
@@ -359,6 +367,23 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "prefer-template": "error",
     },
   });
+
+  // ── Vitest rules ─────────────────────────────────────────────────────
+  // Vitest-specific linting rules for test files using @vitest/eslint-plugin.
+  if (enableVitest) {
+    configs.push({
+      files: ["test/**/*.ts", "tests/**/*.ts", "**/*.test.ts", "**/*.spec.ts"],
+      plugins: { vitest },
+      rules: {
+        ...vitest.configs.recommended.rules,
+      },
+      languageOptions: {
+        globals: {
+          ...vitest.environments.env.globals,
+        },
+      },
+    });
+  }
 
   // ── Test file overrides ─────────────────────────────────────────────
   // Test files often intentionally use patterns flagged by security rules
