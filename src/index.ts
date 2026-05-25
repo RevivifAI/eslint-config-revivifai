@@ -511,6 +511,7 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       // Keep A Changelog format uses version references like [2.0.0] that may
       // reference versions not yet defined at the bottom of the file
       "markdown/no-missing-label-refs": "off",
+      "keep-a-changelog/no-duplicate-headings": "error",
       "keep-a-changelog/no-empty-sections": "error",
       "keep-a-changelog/require-change-categories": "warn",
       "keep-a-changelog/require-change-item-format": "warn",

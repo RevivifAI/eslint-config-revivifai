@@ -356,5 +356,74 @@ export const keepAChangelogPlugin = {
         type: "suggestion" as const,
       },
     },
+
+    /**
+     * Rule: no-duplicate-headings
+     * Per KAC v1.1.0: Each category should appear at most once per version section.
+     * Detects duplicate category headings like having two "Added" sections under "[Unreleased]".
+     */
+    "no-duplicate-headings": {
+      create(context: Rule.RuleContext) {
+        return {
+          Document() {
+            const text = getSourceText(context);
+            const lines = text.split("\n");
+            const validCategories = [
+              "Added",
+              "Changed",
+              "Deprecated",
+              "Removed",
+              "Fixed",
+              "Security",
+            ];
+
+            // Track categories seen per version section
+            // Key = version string (e.g., "[Unreleased]", "1.0.0")
+            // Value = Set of categories seen in that version
+            const versionCategories = new Map<string, Set<string>>();
+            let currentVersion: string | null = null;
+
+            for (let i = 0; i < lines.length; i++) {
+              const line = lines[i];
+
+              // Check for version heading (## [Unreleased] or ## [1.0.0] or ## 1.0.0)
+              const versionMatch = /^##\s+(?:\[)?([^\]\s]+)(?:\])?/.exec(line);
+
+              if (versionMatch) {
+                currentVersion = versionMatch[1];
+
+                if (!versionCategories.has(currentVersion)) {
+                  versionCategories.set(currentVersion, new Set());
+                }
+              }
+
+              // Check for category heading (### Added, ### Changed, etc.)
+              const categoryMatch = new RegExp(`^###\\s+(${validCategories.join("|")})\\s*$`).exec(line);
+
+              if (categoryMatch && currentVersion !== null) {
+                const category = categoryMatch[1];
+                const seenInVersion = versionCategories.get(currentVersion);
+
+                if (seenInVersion?.has(category)) {
+                  context.report({
+                    loc: { column: 0, line: i + 1 },
+                    message: `Duplicate category "${category}" under version "${currentVersion}". Each category should appear at most once per version section.`,
+                  });
+                } else {
+                  seenInVersion?.add(category);
+                }
+              }
+            }
+          },
+        };
+      },
+      meta: {
+        docs: {
+          description: "Disallow duplicate category headings within the same version section",
+          recommended: true,
+        },
+        type: "problem" as const,
+      },
+    },
   },
 };
