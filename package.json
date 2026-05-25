@@ -21,7 +21,8 @@
     "lint": "tsc --noEmit && eslint .",
     "lint:fix": "eslint . --fix",
     "check": "pnpm run lint && pnpm run build",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "publish": "pnpm publish --access public --registry https://registry.npmjs.org"
   },
   "keywords": [
     "eslint",
