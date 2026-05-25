@@ -60,20 +60,20 @@
   "dependencies": {
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^1.2.0",
-    "@eslint/markdown": "^8.0.1",
+    "@eslint/markdown": "^8.0.2",
     "@seahax/eslint-plugin-wrap": "^0.6.11",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@vitest/eslint-plugin": "^1.6.17",
-    "eslint-plugin-jsdoc": "^62.9.0",
+    "eslint-plugin-jsdoc": "^63.0.0",
     "eslint-plugin-perfectionist": "^5.9.0",
     "eslint-plugin-security": "^4.0.0",
     "eslint-plugin-unicorn": "^64.0.0",
     "eslint-plugin-yml": "^3.3.2"
   },
   "devDependencies": {
-    "@types/node": "^25.8.0",
+    "@types/node": "^25.9.1",
     "eslint": "^10.4.0",
     "typescript": "^6.0.3",
-    "typescript-eslint": "^8.59.3"
+    "typescript-eslint": "^8.59.4"
   }
 }
