@@ -45,14 +45,14 @@ export const keepAChangelogPlugin = {
     "no-empty-sections": {
       create(context: Rule.RuleContext) {
         return {
-          Document() {
+          root() {
             const text = getSourceText(context);
             const lines = text.split("\n");
             const categories = ["Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"];
 
             for (let i = 0; i < lines.length; i++) {
               const line = lines[i];
-              const categoryMatch = new RegExp(`^###\\s+(${categories.join("|")})\\s*$`).exec(line);
+              const categoryMatch = new RegExp(`^###\\s+(${categories.join("|")})\\s*\r?$`).exec(line);
 
               if (categoryMatch) {
                 let hasNextContent = false;
@@ -100,7 +100,7 @@ export const keepAChangelogPlugin = {
     "require-change-categories": {
       create(context: Rule.RuleContext) {
         return {
-          Document() {
+          root() {
             const text = getSourceText(context);
             // Regex for changelog headings: categories, versions, dates
             // Matches: ## Added, ## Changed, ## 1.0.0, ## 2024-01-15, etc.
@@ -160,7 +160,7 @@ export const keepAChangelogPlugin = {
         ];
 
         return {
-          Document() {
+          root() {
             const text = getSourceText(context);
             const lines = text.split("\n");
 
@@ -201,7 +201,7 @@ export const keepAChangelogPlugin = {
     "require-date-format": {
       create(context: Rule.RuleContext) {
         return {
-          Document() {
+          root() {
             const text = getSourceText(context);
             const lines = text.split("\n");
 
@@ -246,7 +246,7 @@ export const keepAChangelogPlugin = {
     "require-linkable-versions": {
       create(context: Rule.RuleContext) {
         return {
-          Document() {
+          root() {
             const text = getSourceText(context);
             const lines = text.split("\n");
 
@@ -281,7 +281,7 @@ export const keepAChangelogPlugin = {
     "require-semantic-versioning-order": {
       create(context: Rule.RuleContext) {
         return {
-          Document() {
+          root() {
             const text = getSourceText(context);
             const lines = text.split("\n");
             const versionPattern = /^##\s+(?:\[)?(\d+)\.(\d+)\.(\d+)/;
@@ -332,7 +332,7 @@ export const keepAChangelogPlugin = {
     "require-unreleased-section": {
       create(context: Rule.RuleContext) {
         return {
-          Document() {
+          root() {
             const text = getSourceText(context);
             // Check for Unreleased section and versions
             const hasUnreleased = /^\[?Unreleased\]?[\s-]*$/gm.test(text)
@@ -365,7 +365,7 @@ export const keepAChangelogPlugin = {
     "no-duplicate-headings": {
       create(context: Rule.RuleContext) {
         return {
-          Document() {
+          root() {
             const text = getSourceText(context);
             const lines = text.split("\n");
             const validCategories = [
@@ -398,7 +398,7 @@ export const keepAChangelogPlugin = {
               }
 
               // Check for category heading (### Added, ### Changed, etc.)
-              const categoryMatch = new RegExp(`^###\\s+(${validCategories.join("|")})\\s*$`).exec(line);
+              const categoryMatch = new RegExp(`^###\\s+(${validCategories.join("|")})\\s*\r?$`).exec(line);
 
               if (categoryMatch && currentVersion !== null) {
                 const category = categoryMatch[1];
