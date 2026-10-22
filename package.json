@@ -20,6 +20,7 @@
     "build": "tsc",
     "lint": "tsc --noEmit && eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "node test/jsdoc-plugin.test.mjs",
     "check": "pnpm run lint && pnpm run build",
     "prepublishOnly": "pnpm run build",
     "release": "pnpm publish --access public --registry https://registry.npmjs.org"

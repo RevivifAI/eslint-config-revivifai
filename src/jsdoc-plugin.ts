@@ -19,6 +19,46 @@ interface ReportDescriptorWithMessage {
     };
   };
   message?: string;
+  node?: unknown;
+}
+
+interface CommentNode {
+  type: string;
+  value?: string;
+}
+
+/**
+ * Extracts the description text from a JSDoc comment's raw value.
+ * Strips leading `*` and whitespace from each line and stops at the first tag.
+ * @param commentValue - The raw comment value (text between `/**` and the closing marker).
+ * @returns The description text, or an empty string if none.
+ */
+function extractDescription(commentValue: string): string {
+  const lines = commentValue.split("\n");
+  const descriptionLines: string[] = [];
+
+  for (const line of lines) {
+    const trimmed = line.replace(/^\s*\*?\s?/u, "").trimEnd();
+
+    if (trimmed.startsWith("@")) {
+      break;
+    }
+
+    descriptionLines.push(trimmed);
+  }
+
+  return descriptionLines.join("\n").trim();
+}
+
+/**
+ * Returns the last non-empty line of a text block.
+ * @param text - The text to inspect.
+ * @returns The last non-empty line, or `undefined` if none.
+ */
+function getLastNonEmptyLine(text: string): string | undefined {
+  const lines = text.split("\n").filter((line) => line.trim().length > 0);
+
+  return lines[lines.length - 1];
 }
 
 const originalRule = jsdoc.rules?.["require-description-complete-sentence"];
@@ -30,7 +70,6 @@ if (!originalRule) {
 const requireDescriptionCompleteSentence: Rule.RuleModule = {
   meta: originalRule.meta,
   create(context) {
-    const sourceCode = context.sourceCode;
     const proxiedContext = Object.create(context) as Rule.RuleContext;
 
     Object.defineProperty(proxiedContext, "report", {
@@ -38,14 +77,17 @@ const requireDescriptionCompleteSentence: Rule.RuleModule = {
       enumerable: true,
       value: (descriptor: Rule.ReportDescriptor) => {
         const descriptorWithMessage = descriptor as ReportDescriptorWithMessage;
+        const node = descriptorWithMessage.node as CommentNode | undefined;
 
         if (
           descriptorWithMessage.message === "Sentences must end with a period."
-          && descriptorWithMessage.loc
+          && node?.type === "Block"
+          && typeof node.value === "string"
         ) {
-          const line = sourceCode.lines[descriptorWithMessage.loc.start.line - 1];
+          const description = extractDescription(node.value);
+          const lastLine = getLastNonEmptyLine(description);
 
-          if (line && (line.trimEnd().endsWith(";") || line.trimEnd().endsWith(":"))) {
+          if (lastLine && (lastLine.endsWith(";") || lastLine.endsWith(":"))) {
             return;
           }
         }
