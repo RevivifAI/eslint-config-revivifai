@@ -146,7 +146,12 @@ const findCaseForReportedLine = (lineNumber) => {
 };
 
 const failingCases = [];
-const passingCases = [];
+
+assert.deepEqual(
+  [...caseByCommentStartLine.values()].toSorted(),
+  [...expectedFailingCases, ...expectedPassingCases].toSorted(),
+  "Fixture cases and expectation lists are out of sync",
+);
 
 await writeFile(fixturePath, fixture, "utf8");
 
@@ -177,12 +182,6 @@ try {
 
     failingCases.push(caseId);
   }
-
-  for (const caseId of expectedPassingCases) {
-    if (!failingCases.includes(caseId)) {
-      passingCases.push(caseId);
-    }
-  }
 } finally {
   await unlink(fixturePath);
 }
@@ -191,10 +190,4 @@ assert.deepEqual(
   failingCases.toSorted(),
   expectedFailingCases.toSorted(),
   `Expected jsdoc sentence-end errors only for ${expectedFailingCases.join(", ")}; got ${failingCases.length} error(s) for ${failingCases.join(", ")}`,
-);
-
-assert.deepEqual(
-  passingCases.toSorted(),
-  expectedPassingCases.toSorted(),
-  `Expected no jsdoc sentence-end errors for ${expectedPassingCases.join(", ")}`,
 );
