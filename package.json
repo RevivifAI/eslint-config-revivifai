@@ -20,6 +20,7 @@
     "build": "tsc",
     "lint": "tsc --noEmit && eslint .",
     "lint:fix": "eslint . --fix",
+    "test": "node test/jsdoc-plugin.test.mjs",
     "check": "pnpm run lint && pnpm run build",
     "prepublishOnly": "pnpm run build",
     "release": "pnpm publish --access public --registry https://registry.npmjs.org"
@@ -59,12 +60,14 @@
     "typescript-eslint": "^8.0.0"
   },
   "dependencies": {
+    "@eslint/css": "^2.0.1",
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^1.2.0",
     "@eslint/markdown": "^8.0.2",
     "@seahax/eslint-plugin-wrap": "^0.6.11",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@vitest/eslint-plugin": "^1.6.17",
+    "eslint-plugin-better-tailwindcss": "^4.10.0",
     "eslint-plugin-jsdoc": "^63.0.0",
     "eslint-plugin-perfectionist": "^5.9.0",
     "eslint-plugin-security": "^4.0.0",

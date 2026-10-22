@@ -10,11 +10,13 @@
 
 import type { Linter } from "eslint";
 
+import css from "@eslint/css";
 import eslint from "@eslint/js";
 import markdown from "@eslint/markdown";
 import wrap from "@seahax/eslint-plugin-wrap";
 import stylistic from "@stylistic/eslint-plugin";
-import jsdoc from "eslint-plugin-jsdoc";
+import jsdocPlugin from "./jsdoc-plugin.js";
+import betterTailwindcss from "eslint-plugin-better-tailwindcss";
 import perfectionist from "eslint-plugin-perfectionist";
 import security from "eslint-plugin-security";
 import unicorn from "eslint-plugin-unicorn";
@@ -33,6 +35,12 @@ export interface RevivifaiEslintOptions {
    * Additional ignore patterns.
    */
   ignores?: string[];
+
+  /**
+   * Whether to enable CSS linting using @eslint/css.
+   * @default true
+   */
+  css?: boolean;
 
   /**
    * Whether to enable JSDoc enforcement rules.
@@ -59,6 +67,12 @@ export interface RevivifaiEslintOptions {
    * @default true
    */
   stylistic?: boolean;
+
+  /**
+   * Whether to enable Tailwind CSS linting using eslint-plugin-better-tailwindcss.
+   * @default true
+   */
+  tailwind?: boolean;
 
   /**
    * Root directory for the project. Used for tsconfig resolution.
@@ -102,11 +116,13 @@ export interface RevivifaiEslintOptions {
  */
 export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Config[] {
   const {
+    css: enableCss = true,
     ignores = [],
     jsdoc: enableJsdoc = true,
     perfectionist: enablePerfectionist = true,
     security: enableSecurity = true,
     stylistic: enableStylistic = true,
+    tailwind: enableTailwind = true,
     tsconfigRootDir = process.cwd(),
     typeCheckingFiles = ["**/*.ts", "**/*.tsx"],
     unicorn: enableUnicorn = true,
@@ -162,14 +178,17 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
 
   // ── Import / member sorting (perfectionist) ─────────────────────────
   if (enablePerfectionist) {
-    configs.push(perfectionist.configs["recommended-natural"]);
+    configs.push({
+      ...perfectionist.configs["recommended-natural"],
+      files: typeCheckingFiles,
+    });
   }
 
   // ── JSDoc linting ───────────────────────────────────────────────────
   if (enableJsdoc) {
     configs.push({
       files: typeCheckingFiles,
-      plugins: { jsdoc },
+      plugins: { jsdoc: jsdocPlugin },
       rules: {
         "jsdoc/check-access": "error",
         "jsdoc/check-alignment": "error",
@@ -521,6 +540,25 @@ export function createConfig(options: RevivifaiEslintOptions = {}): Linter.Confi
       "keep-a-changelog/require-unreleased-section": "off",
     },
   });
+
+  // ── CSS linting ──────────────────────────────────────────────────────
+  // Uses @eslint/css for native CSS linting (ESLint 10+ language plugin).
+  if (enableCss) {
+    configs.push({
+      files: ["**/*.css"],
+      language: "css/css",
+      ...css.configs.recommended,
+    });
+  }
+
+  // ── Tailwind CSS linting ─────────────────────────────────────────────
+  // Uses eslint-plugin-better-tailwindcss for class formatting and correctness.
+  if (enableTailwind) {
+    configs.push({
+      files: ["**/*.{js,jsx,ts,tsx,svelte,css}"],
+      ...betterTailwindcss.configs.recommended,
+    });
+  }
 
   // ── Stylistic formatting ───────────────────────────────────────────
   if (enableStylistic) {
